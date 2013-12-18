@@ -10,6 +10,9 @@
     "dependencies": {
         "bezier": "0.1.0",
         "vector": "*",
-        "quaternionjs": "*"
+        "quaternionjs": "*",
+        "nconf": "*",
+        "winston": "*",
+        "async": "*"
     }
 }
