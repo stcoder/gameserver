@@ -1,9 +1,10 @@
-var config, log, util, net, GameController;
+var config, log, util, net, GameController, ManagerActions;
 
 config = require('./../library/config');
 log = require('./../library/logger')(module);
 util = require('util');
 net = require('net');
+ManagerActions = require('./ManagerActions');
 
 GameController = function() {
     this.connections = [];
@@ -11,13 +12,22 @@ GameController = function() {
 };
 
 GameController.prototype.init = function() {
-  var _that;
+  var _this;
 
-  _that = this;
+  _this = this;
   this.netServer = net.createServer();
   this.netServer.on('connection', function(socket) {
-    var connection = require('./../classes/connection_class')(socket.id, socket);
-    console.log(socket.id, socket);
+    var connection = require('./../classes/connection_class')(socket.remotePort, socket);
+    _this.connections.push(connection);
+
+    socket.on('close', function(socket) {
+      connection.close(socket);
+    });
+
+    socket.on('data', function(buffer) {
+      var rawData = connection.readBuffer(buffer);
+      ManagerActions.handle(rawData.command, rawData.data);
+    });
   });
 };
 

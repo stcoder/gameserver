@@ -8,11 +8,12 @@
         "url": "git://github.com/stcoder/gameserver"
     },
     "dependencies": {
-        "bezier": "0.1.0",
+        "bezier": "*",
         "vector": "*",
         "quaternionjs": "*",
         "nconf": "*",
         "winston": "*",
-        "async": "*"
+        "async": "*",
+        "bson": "*"
     }
 }

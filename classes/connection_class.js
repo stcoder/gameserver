@@ -1,18 +1,36 @@
-var ConnectionClass, baseClass, util, net;
+var ConnectionClass, baseClass, util, net, bson;
 
 baseClass = require('./../library/baseClass');
 util = require('util');
 net = require('net');
+bson = require('bson').BSONPure.BSON;
 
-ConnectionClass = function(id, socket) {
-  baseClass.Class.call(this);
+ConnectionClass = {
+  id: null,
+  socket: null,
+  data: {},
+  cmd: null,
 
-  this.id = id;
-  this.socket = socket;
+  create: function(id, socket) {
+    this.id = id;
+    this.socket = socket;
+    return this;
+  },
+
+  close: function() {
+
+  },
+
+  readBuffer: function(buffer) {
+    var tmp = bson.deserialize(buffer);
+    // TODO: сделать проверку на существующие данные
+    return {
+      command: tmp.command,
+      data: tmp.data
+    };
+  }
 };
 
-util.inherits(ConnectionClass, baseClass.Class);
-
 module.exports = function(id, socket) {
-  return new ConnectionClass(id, socket);
+  return ConnectionClass.create(id, socket);
 };
