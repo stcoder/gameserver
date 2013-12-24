@@ -5,20 +5,11 @@ logger = require('./library/logger')(module);
 
 // logger.info('Server script is running');
 
-GameController = require('./game/GameController');
+/*GameController = require('./game/GameController');
 GameController.init();
-GameController.run();
+GameController.run();*/
 
-/*var bsonF = require('bson').BSONPure.BSON;
-var bson = bsonF;
+var mc = require('./game/ManagerCommands');
+mc.loadHandlers();
 
-var data = {
-  CMD: -1,
-  TICK: 234,
-  X: 2.2313123,
-  Y: 3.3458394,
-  Z: 2.1323123
-};
-var d = bson.serialize(data);
-
-console.log(bson.calculateObjectSize(data), bson.deserialize(d));*/
+mc.handle(mc.commands.CLIENT.CONNECT, {user: {id: 123, login: 'stcoder'}});

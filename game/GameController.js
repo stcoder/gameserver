@@ -1,10 +1,11 @@
-var config, log, util, net, GameController, ManagerActions;
+var config, log, util, net, GameController, ManagerCommands, BaseClass;
 
 config = require('./../library/config');
 log = require('./../library/logger')(module);
 util = require('util');
 net = require('net');
-ManagerActions = require('./ManagerActions');
+ManagerCommands = require('./ManagerCommands');
+BaseClass = require('basejs');
 
 GameController = function() {
     this.connections = [];
@@ -38,3 +39,18 @@ GameController.prototype.run = function() {
 };
 
 module.exports = new GameController();
+
+GameController = BaseClass.extend({
+  constructor: function() {
+    this.connection = [];
+    this.netServer = null;
+  },
+  init: function() {
+    ManagerCommands.loadHandlers();
+
+    this.netServer = net.createServer();
+    this.netServer.on('connection', function(socket) {
+      ManagerCommands.handle(ManagerCommands.commands.CLIENT.CONNECT, )
+    });
+  }
+});
