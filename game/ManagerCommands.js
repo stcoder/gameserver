@@ -13,10 +13,7 @@ ManagerCommands = BaseClass.extend({
     },
     loadHandlers: function() {
         // загрузить всех обработчиков
-        var _this = this;
-        requireTree('./handlers/', {each: function(obj) {
-            obj(_this);
-        }});
+        requireTree('./handlers/');
     },
     registerHandler: function(command, handler) {
         // зарегистрировать обработчик

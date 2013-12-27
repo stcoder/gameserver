@@ -8,10 +8,14 @@ socket = new net.Socket();
 socket.connect(9999, 'localhost');
 
 socket.write(bson.serialize({
-  command: 12,
+  cmd: 2.1,
   data: {
     x: 0,
     y: 0,
     z: 10
   }
 }));
+
+socket.on('data', function(buffer) {
+    console.log(bson.deserialize(buffer));
+});
