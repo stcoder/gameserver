@@ -10,10 +10,12 @@ requireTree = require('require-tree');
 ManagerCommands = BaseClass.extend({
     constructor: function() {
         this.commands = require(path.join(config.get('root_dir'), config.get('server:commands_file')));
+        this.handlers = {};
     },
     loadHandlers: function() {
         // загрузить всех обработчиков
-        requireTree('./handlers/');
+        this.handlers = requireTree('./handlers/');
+        console.log(this.handlers);
     },
     registerHandler: function(command, handler) {
         // зарегистрировать обработчик

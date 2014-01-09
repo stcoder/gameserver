@@ -23,6 +23,13 @@ ConnectClientHandler = CommandHandlerClass.extend({
         socket.connection = connection;
         GameController.connections.push(socket);
 
+        // random position
+        connection.position = [
+            Math.floor(Math.random() * (10 - 1 + 1)) + 1,
+            Math.floor(Math.random() * (10 - 1 + 1)) + 1,
+            Math.floor(Math.random() * (10 - 1 + 1)) + 1
+        ];
+
         logger.info('Client %d: connect', socket.connection.id);
     },
     handleRead: function(data) {

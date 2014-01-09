@@ -4,6 +4,7 @@ var config,
     net,
     GameController,
     ManagerCommands,
+    BSON,
     BaseClass;
 
 config = require('./../library/config');
@@ -12,6 +13,7 @@ util = require('util');
 net = require('net');
 ManagerCommands = require('./ManagerCommands');
 BaseClass = require('basejs');
+BSON = require('bson').BSONNative.BSON;
 
 GameController = BaseClass.extend({
   constructor: function() {
@@ -35,8 +37,13 @@ GameController = BaseClass.extend({
     });
   },
   run: function() {
+    var _this = this;
     this.netServer.listen(config.get('server:port'), function() {
       ManagerCommands.handle(ManagerCommands.commands.SYSTEM.SERVER_START);
+
+      setInterval(function() {
+        _this.update(_this);
+      }, 1000 / 30);
     });
   },
   broadcast: function(buffer) {
@@ -44,6 +51,22 @@ GameController = BaseClass.extend({
       var connection;
       connection = this.connections[index].connection;
       connection.send(buffer);
+    }
+  },
+  update: function(gc) {
+    for(index in gc.connections) {
+      var connection;
+      conn = gc.connections[index].connection;
+
+      if (conn.move === true) {
+        console.log('client id: ' + conn.id + '; position: ' + conn.position);
+        ManagerCommands.handlers.ClientMoveHandler.move(conn, conn.position, conn.movePosition);
+
+        gc.broadcast(BSON.serialize({
+            cmd: ManagerCommands.commands.CLIENT_ACTION.MOVE,
+            data: [conn.id, conn.position]
+        }));
+      }
     }
   }
 });

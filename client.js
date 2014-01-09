@@ -9,11 +9,7 @@ socket.connect(9999, 'localhost');
 
 socket.write(bson.serialize({
   cmd: 2.1,
-  data: {
-    x: 0,
-    y: 0,
-    z: 10
-  }
+  data: [35, 35, 35]
 }));
 
 socket.on('data', function(buffer) {
