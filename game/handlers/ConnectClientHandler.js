@@ -29,6 +29,7 @@ ConnectClientHandler = CommandHandlerClass.extend({
             Math.floor(Math.random() * (10 - 1 + 1)) + 1,
             Math.floor(Math.random() * (10 - 1 + 1)) + 1
         ];
+        connection.startPing = Date.now();
 
         logger.info('Client %d: connect', socket.connection.id);
     },
@@ -39,10 +40,10 @@ ConnectClientHandler = CommandHandlerClass.extend({
 
         socket.connection.data = buffer.data;
 
+        logger.info('Client %d: command "%s" data ' + util.inspect(buffer.data), socket.connection.id, buffer.cmd);
+
         // запускаем обработку комманды
         ManagerCommands.handle(buffer.cmd, [buffer.data, socket]);
-
-        logger.info('Client %d: command "%s" data ' + util.inspect(buffer.data), socket.connection.id, buffer.cmd);
     },
     handleClose: function(socket) {
         logger.info('Client %d: disconnect', socket.connection.id);
@@ -52,6 +53,14 @@ ConnectClientHandler = CommandHandlerClass.extend({
             cmd: ManagerCommands.commands.CLIENT.DISCONNECT,
             data: {client: socket.connection.id}
         }));
+    },
+    handlePing: function(data) {
+        socket = data[1];
+
+        socket.connection.ping = Date.now() - socket.connection.startPing;
+        socket.connection.startPing = 0;
+
+        logger.info('Client %d: ping: %d', socket.connection.id, socket.connection.ping);
     }
 });
 
@@ -59,5 +68,6 @@ _connectClient = new ConnectClientHandler();
 CommandHandlerClass.register(ManagerCommands.commands.CLIENT.CONNECT, _connectClient.handleConnect);
 CommandHandlerClass.register(ManagerCommands.commands.CLIENT.READ, _connectClient.handleRead);
 CommandHandlerClass.register(ManagerCommands.commands.CLIENT.CLOSE, _connectClient.handleClose);
+CommandHandlerClass.register(ManagerCommands.commands.CLIENT.PING, _connectClient.handlePing);
 
 module.exports = _connectClient;

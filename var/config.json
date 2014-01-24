@@ -2,6 +2,10 @@
   "server": {
     "port": 9999,
     "log": "/var/logs/server.log",
-    "commands_file": "/var/commands.json"
+    "commands_file": "/var/commands.json",
+    "actions_file": "/var/actions.json"
+  },
+  "game": {
+      "tick_interval": 120
   }
 }

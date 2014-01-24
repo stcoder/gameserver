@@ -1,0 +1,1 @@
+exports.wait = 'ps.wait';
