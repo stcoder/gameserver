@@ -34,8 +34,11 @@ var PlayersClass = BaseClass.extend({
             return false;
         });
     },
-    broadcast: function(buffer) {
+    broadcast: function(buffer, callback) {
         _.each(this.players, function(player) {
+            if (callback) {
+                callback(player);
+            }
             player.send(buffer);
         });
     }

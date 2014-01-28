@@ -59,3 +59,14 @@ exports.playerDisconnect = function(player) {
     var packet = new Packet(ManagerCommands.commands.PLAYER.DISCONNECT, data);
     return packet;
 };
+
+/**
+ * Пинг игрока
+ *
+ * Пакет отправляется всем игрокам для вычисления пинга
+ */
+exports.playerPing = function() {
+    var data = {};
+    var packet = new Packet(ManagerCommands.commands.PLAYER.PING, data);
+    return packet;
+};

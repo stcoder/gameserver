@@ -3,7 +3,6 @@ var _ = require('underscore');
 var NetServer = require('./../classes/NetServerClass');
 var Players = require('./../classes/PlayersClass');
 var Player = require('./../classes/PlayerClass');
-var BSON = require('bson').BSONNative.BSON;
 var Packet = require('./../classes/PacketClass');
 var Packets = require('./Packets');
 var ManagerCommands = require('./ManagerCommands');
@@ -15,6 +14,9 @@ var GameController = BaseClass.extend({
     constructor: function() {
         this.players = Players;
         this.server = new NetServer(Config.get('server:port'));
+
+        // загружаем обработчики
+        ManagerCommands.loadHandlers();
 
         // tick
         this.tickCount = 0;
@@ -44,6 +46,9 @@ var GameController = BaseClass.extend({
             // добавляем в список игроков
             _this.players.add(player);
 
+            // передаем команду другим обработчикам
+            ManagerCommands.handle(ManagerCommands.commands.PLAYER.CONNECT, [player]);
+
             Log.info("PlayerID: " + player.id + " connected");
         });
 
@@ -60,6 +65,9 @@ var GameController = BaseClass.extend({
 
             _this.players.broadcast(packet.getBuffer());
 
+            // передаем команду другим оработчикам
+            ManagerCommands.handle(ManagerCommands.commands.PLAYER.CLOSE, [player, socket]);
+
             Log.info("PlayerID: " + player.id + " disconnected");
         });
 
@@ -69,6 +77,9 @@ var GameController = BaseClass.extend({
             var sourceBuffer = data[1];
             var packet = Packet.createFromBuffer(sourceBuffer);
             var player = _this.players.findBySocket(socket);
+
+            // передаем команду другим обработчикам
+            ManagerCommands.handle(ManagerCommands.commands.PLAYER.READ, [player, packet]);
 
             Log.info("PlayerID: " + player.id + " say: " + Util.inspect(packet));
         });
@@ -84,7 +95,17 @@ var GameController = BaseClass.extend({
         this.server.start();
 
         this.tickTimer = setInterval(function() {
-            console.info("TickC: " + _this.tickCount);
+            // console.info("TickC: " + _this.tickCount);
+            if (_this.tickCount % 20 == 0) {
+                var timeStartSendPacket = Date.now();
+                var packetPlayerPing = Packets.playerPing();
+
+                _this.players.broadcast(packetPlayerPing.getBuffer(), function(player) {
+                    player.timePingStart = timeStartSendPacket;                    
+                });
+
+                Log.info("TICK: " + _this.tickCount + " send packet PlayerPing");
+            }
             _this.tickCount++;
         }, this.tickInterval);
     }
