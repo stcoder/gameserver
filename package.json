@@ -17,6 +17,7 @@
         "bson": "*",
         "basejs": "*",
         "require-tree": "*",
-        "underscore": "*"
+        "underscore": "*",
+        "moment": "*"
     }
 }

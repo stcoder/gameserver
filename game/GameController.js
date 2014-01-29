@@ -20,7 +20,9 @@ var GameController = BaseClass.extend({
 
         // tick
         this.tickCount = 0;
-        this.tickInterval = Config.get('game:tick_interval');
+
+        // количество тиков в секунду
+        this.countTickInSecond = Config.get('game:count_tick_in_second');
         this.tickTimer = null;
 
         var _this = this;
@@ -95,7 +97,7 @@ var GameController = BaseClass.extend({
         this.server.start();
 
         this.tickTimer = setInterval(function() {
-            // console.info("TickC: " + _this.tickCount);
+            // вычисляем пинг игрока
             if (_this.tickCount % 20 == 0) {
                 var timeStartSendPacket = Date.now();
                 var packetPlayerPing = Packets.playerPing();
@@ -106,8 +108,10 @@ var GameController = BaseClass.extend({
 
                 Log.info("TICK: " + _this.tickCount + " send packet PlayerPing");
             }
+
+            console.log(_this.tickCount);
             _this.tickCount++;
-        }, this.tickInterval);
+        }, 1000 / this.countTickInSecond);
     }
 });
 

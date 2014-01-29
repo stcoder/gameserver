@@ -6,6 +6,6 @@
     "actions_file": "/var/actions.json"
   },
   "game": {
-      "tick_interval": 120
+      "count_tick_in_second": 8
   }
 }
