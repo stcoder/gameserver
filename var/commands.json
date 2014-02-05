@@ -5,15 +5,16 @@
         "SERVER_ERROR": -0.1
     },
     "PLAYER": {
-        "CONNECT": 1.1,
+        "CONNECTED": 1.1,
         "CLOSE": 1.2,
         "ERROR": -1.1,
         "READ": 1.3,
         "WRITE": 1.4,
         "DISCONNECT": 1.5,
-        "PING": 1.6
+        "PING": 1.6,
+        "NEWCONNECT": 1.7
     },
-    "CLIENT_ACTION": {
+    "PLAYER_ACTION": {
         "MOVE": 2.1
     }
 }

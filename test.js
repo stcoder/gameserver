@@ -15,10 +15,17 @@ setInterval(function() {
 }, 1);//1000 / 8);*/
 
 var Timer = require('./classes/TimerClass');
-Timer.runTimer(function() {
-    var tick = 0;
-    var interval = setInterval(function() {
-        console.log(tick);
-        tick++;
-    }, 1000 / 8);
+Timer.runTimer(function(tick, date) {
+    if (tick % 20 === 0) {
+        console.log('send ping');
+    }
+
+    if (tick % 5 === 0) {
+        console.log('update player');
+    }
+
+    if (tick % 80 === 0) {
+        console.log('send state');
+    }
+    // console.log(Timer.getCurrentDate().format('YYYY MMMM DD H:m:s'));
 });

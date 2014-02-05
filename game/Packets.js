@@ -1,5 +1,6 @@
 var Packet = require('./../classes/PacketClass');
 var ManagerCommands = require('./ManagerCommands');
+var _ = require('underscore');
 
 // Packets
 
@@ -8,12 +9,23 @@ var ManagerCommands = require('./ManagerCommands');
  * 
  * Пакет отправляется игроку который совершил подключение
  */
-exports.playerConnected = function(player) {
+exports.playerConnected = function(player, players) {
     var data = {
-        pid: player.id
+        pid: player.id,
+        position: player.position,
+        direction: player.direction,
+        players: []
     };
 
-    var packet = new Packet(ManagerCommands.commands.PLAYER.CONNECT, data);
+    _.each(players, function(p) {
+        data.players.push({
+            pid: p.id,
+            position: p.position,
+            direction: p.direction
+        })
+    });
+
+    var packet = new Packet(ManagerCommands.commands.PLAYER.CONNECTED, data);
     return packet;
 };
 
@@ -29,7 +41,7 @@ exports.playerNewConnected = function(player) {
         direction: player.direction
     };
 
-    var packet = new Packet(ManagerCommands.commands.PLAYER.CONNECT, data);
+    var packet = new Packet(ManagerCommands.commands.PLAYER.NEWCONNECT, data);
     return packet;
 };
 
@@ -68,5 +80,33 @@ exports.playerDisconnect = function(player) {
 exports.playerPing = function() {
     var data = {};
     var packet = new Packet(ManagerCommands.commands.PLAYER.PING, data);
+    return packet;
+};
+
+exports.playerMove = function(player) {
+    var data = {
+        pid: player.id,
+        direction: player.direction,
+        speed: player.speed,
+        ping: player.ping,
+        isMove: true,
+        old_position: {
+            x: player.oldPosition.x,
+            y: player.oldPosition.y,
+            z: player.oldPosition.z
+        },
+        cur_position: {
+            x: player.position.x,
+            y: player.position.y + 0.5,
+            z: player.position.z
+        },
+        point_position: {
+            x: player.positionMovePoint.x,
+            y: player.positionMovePoint.y,
+            z: player.positionMovePoint.z
+        }
+    };
+
+    var packet = new Packet(ManagerCommands.commands.PLAYER_ACTION.MOVE, data);
     return packet;
 };

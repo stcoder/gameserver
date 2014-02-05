@@ -49,6 +49,39 @@ var PlayerClass = BaseClass.extend({
     },
     send: function(buffer) {
         this.socket.write(buffer);
+    },
+    getRandomPosition: function(max, min) {
+        return new Vector(
+            Math.floor(Math.random() * (max - min + 1)) + min,
+            0.5,
+            Math.floor(Math.random() * (max - min + 1)) + min
+        );
+    },
+    setPositionMovePoint: function(x, y, z) {
+        this.positionMovePoint = new Vector(x, y, z);
+        this.state = PlayerState.move;
+    },
+    move: function() {
+        if (this.state === PlayerState.move) {
+            if (Math.floor(Vector.distance(this.position, this.positionMovePoint)) > 0) {
+                this.oldPosition = this.position.clone();
+                this.direction = Vector.sub(this.positionMovePoint, this.position);
+                this.position.add(this.direction.mult(this.speed));
+                console.log("PlayerMOVE: " + this.id + " speed: " + this.speed + " distance: " + Math.floor(Vector.distance(this.position, this.positionMovePoint)) + " old position: " + this.oldPosition + " new position: " + this.position);
+            } else {
+                this.state = PlayerState.wait;
+                this.positionMovePoint = new Vector(0, 0, 0);
+            }
+        }
+    },
+    update: function(tick, date) {
+        var state = null;
+
+        console.log('--- player update ---');
+
+        this.move();
+
+        return state;
     }
 });
 

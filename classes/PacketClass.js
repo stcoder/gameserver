@@ -20,6 +20,9 @@ var PacketClass = BaseClass.extend({
         this.data = data;
         this.size = bson.calculateObjectSize(this.data);
     },
+    pushData: function(object) {
+        this.data.push(object);
+    },
     getBuffer: function() {
         return bson.serialize({command: this.command, data: this.data}, null, true);
     }
