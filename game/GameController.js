@@ -36,7 +36,7 @@ var GameController = BaseClass.extend({
             // создаем объект игрока с временным id
             var player = new Player(socket.remotePort);
             console.log(player.position);
-            player.position = player.getRandomPosition(60, 10);
+            player.position = player.getRandomPosition(100, 50);
             console.log(player.position);
             player.socket = socket;
 

@@ -1,8 +1,10 @@
 var BaseClass = require('basejs');
 var PlayerState = require('./../game/PlayerState');
 var Vector = require('vector').Vector;
+var Quaternion = require('quaternionjs');
 var Target = require('./TargetClass');
 var TargetsType = require('./../game/TargetsType');
+var Timer = require('./TimerClass');
 
 var PlayerClass = BaseClass.extend({
     constructor: function(id) {
@@ -24,10 +26,34 @@ var PlayerClass = BaseClass.extend({
         this.position = new Vector(0, 0, 0);
 
         // Старая позиция игрока
-        this.oldPosition = new Vector(0, 0, 0);
+        this.startPosition = new Vector(0, 0, 0);
+
+        // Текущий поворот
+        this.rotation = new Quaternion(0, 0, 0, 0);
+
+        // Время затрачиваемое на поворот
+        this.rotationTime = 0;
+
+        // Время старта поворота
+        this.rotationTimeStart = 0;
+
+        // Время конца поворота
+        this.rotationTimeEnd = 0;
+
+        // Время затрачиваемое на перемещение
+        this.moveTime = 0;
+
+        // Время старта перемещения
+        this.moveTimeStart = 0;
+
+        // Время конца перемещения
+        this.moveTimeEnd = 0;
+
+        this.angle = 0;
+
 
         // Направление
-        this.direction = 0;
+        this.direction = new Vector(0, 0, 0);
 
         // Позиция для точки к перемещению
         this.positionMovePoint = new Vector(0, 0, 0);
@@ -35,8 +61,11 @@ var PlayerClass = BaseClass.extend({
         // Цель
         this.target = new Target(null);
 
-        // Скорость игрока
-        this.speed = 0.3;
+        // Скорость перемещения
+        this.speedMove = 0.3;
+
+        // Скорость поворота
+        this.speedRotation = 10.3;
 
         // Пинг
         this.ping = 0;
@@ -58,28 +87,45 @@ var PlayerClass = BaseClass.extend({
         );
     },
     setPositionMovePoint: function(x, y, z) {
+        this.startPosition = this.position;
         this.positionMovePoint = new Vector(x, y, z);
+
+        this.direction = Vector.sub(this.positionMovePoint, this.startPosition);
+        this.direction.y = 0;
+        this.angle = Vector.angle(this.direction, new Vector(0, 0, 1.0));
+        this.rotationTimeStart = Timer.getCurrentDate().unix();
+        this.rotationTime = this.angle / this.speedRotation;
+        this.rotationTimeEnd = this.rotationTimeStart + (this.rotationTime * 1000);
+
+        this.moveTimeStart = this.rotationTimeEnd;
+        var distance = Vector.distance(this.startPosition, this.positionMovePoint);
+        this.moveTime = distance / this.speedMove;
+        this.moveTimeEnd = this.moveTimeStart + (this.moveTime * 1000);
+
         this.state = PlayerState.move;
     },
-    move: function() {
-        if (this.state === PlayerState.move) {
-            if (Math.floor(Vector.distance(this.position, this.positionMovePoint)) > 0) {
-                this.oldPosition = this.position.clone();
-                this.direction = Vector.sub(this.positionMovePoint, this.position);
-                this.position.add(this.direction.mult(this.speed));
-                console.log("PlayerMOVE: " + this.id + " speed: " + this.speed + " distance: " + Math.floor(Vector.distance(this.position, this.positionMovePoint)) + " old position: " + this.oldPosition + " new position: " + this.position);
-            } else {
-                this.state = PlayerState.wait;
-                this.positionMovePoint = new Vector(0, 0, 0);
+    move: function(date) {
+        var currentTimestamp = date.unix();
+        var state = PlayerState.wait;
+
+        if (this.rotationTimeEnd > currentTimestamp) {
+            state = PlayerState.rotation;
+        } else if (this.rotationTimeEnd <= currentTimestamp) {
+            if (this.moveTimeEnd > currentTimestamp) {
+                state = PlayerState.move;
+            } else if (this.moveTimeEnd <= currentTimestamp) {
+                state = PlayerState.wait;
             }
         }
+
+        this.state = state;
     },
     update: function(tick, date) {
         var state = null;
 
         console.log('--- player update ---');
 
-        this.move();
+        this.move(date);
 
         return state;
     }

@@ -13,7 +13,10 @@ setInterval(function() {
     // console.log(date.seconds(), date.minute(), date.hour());
     console.log(date.format("dddd, MMMM Do YYYY, H:mm:ss a"));
 }, 1);//1000 / 8);*/
-
+var Player = require('./classes/PlayerClass');
+var Vector = require('vector').Vector;
+var e = new Player();
+e.position = new Vector(90, 0, 50);
 var Timer = require('./classes/TimerClass');
 Timer.runTimer(function(tick, date) {
     if (tick % 20 === 0) {
@@ -22,6 +25,8 @@ Timer.runTimer(function(tick, date) {
 
     if (tick % 5 === 0) {
         console.log('update player');
+        e.setPositionMovePoint(100, 6, 35);
+        console.log(e);
     }
 
     if (tick % 80 === 0) {

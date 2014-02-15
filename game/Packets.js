@@ -84,7 +84,7 @@ exports.playerPing = function() {
 };
 
 exports.playerMove = function(player) {
-    var data = {
+/*    var data = {
         pid: player.id,
         direction: player.direction,
         speed: player.speed,
@@ -104,6 +104,16 @@ exports.playerMove = function(player) {
             x: player.positionMovePoint.x,
             y: player.positionMovePoint.y,
             z: player.positionMovePoint.z
+        }
+    };*/
+    var data = {
+        pid: player.id,
+        rotation_speed: player.speedRotation,
+        move_speed: player.speedMove,
+        move_position: player.positionMovePoint,
+        timer: {
+            rotation_time: player.rotationTime,
+            move_time: player.moveTime
         }
     };
 
